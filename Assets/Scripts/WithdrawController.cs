@@ -10,22 +10,29 @@ public class WithdrawController : MonoBehaviour
 
     private void Start()
     {
-        atm = FindObjectOfType<ATMManager>();
+        atm = ATMManager.instance;
+        withdrawInputField.characterValidation = TMP_InputField.CharacterValidation.Integer;
     }
 
     public void OnWithdrawButtonClick()
     {
-        int withdrawAmount = int.Parse(withdrawInputField.text);
-        if (withdrawAmount <= atm.balance)
+        if (int.TryParse(withdrawInputField.text, out int withdrawAmount))
         {
-            atm.balance -= withdrawAmount;
-            atm.cash += withdrawAmount;
-            atm.UpdateBalanceAndCashText(atm.balance, atm.cash);
+            if (withdrawAmount <= atm.balance)
+            {
+                atm.balance -= withdrawAmount;
+                atm.cash += withdrawAmount;
+                atm.UpdateBalanceAndCashText(atm.balance, atm.cash);
+            }
+            else
+            {
+                atm.ShowInsufficientBalanceUI();
+            }
         }
         else
         {
-            atm.ShowInsufficientBalanceUI();
-        }
+            Debug.Log("입금액을 올바르게 입력하세요.");
+        }    
         withdrawInputField.text = "";
     }
     public void TenThousandWithdrawBtnClick()

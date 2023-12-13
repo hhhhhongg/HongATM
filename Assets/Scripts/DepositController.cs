@@ -10,22 +10,30 @@ public class DepositController : MonoBehaviour
 
     private void Start()
     {
-        atm = FindObjectOfType<ATMManager>();
+        atm = ATMManager.instance;
+        depositInputField.characterValidation = TMP_InputField.CharacterValidation.Integer;
     }
 
     public void OnDepositButtonClick()
     {
-        int depositAmount = int.Parse(depositInputField.text);
-        if (depositAmount <= atm.cash)
+        if (int.TryParse(depositInputField.text, out int depositAmount))
         {
-            atm.cash -= depositAmount;
-            atm.balance += depositAmount;
-            atm.UpdateBalanceAndCashText(atm.balance, atm.cash);
+            if (depositAmount <= atm.cash)
+            {
+                atm.cash -= depositAmount;
+                atm.balance += depositAmount;
+                atm.UpdateBalanceAndCashText(atm.balance, atm.cash);
+            }
+            else
+            {
+                atm.ShowInsufficientCashUI();
+            }
         }
         else
         {
-            atm.ShowInsufficientCashUI();
+            Debug.Log("입금액을 올바르게 입력하세요.");
         }
+            
         depositInputField.text = "";
     }
 
